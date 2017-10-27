@@ -1,11 +1,12 @@
 const webpack = require('webpack');
-const {resolve} = require('path');
+const {dirname, resolve} = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackTemplate = require('html-webpack-template');
 
-const dirPath = process.cwd();
+const ocularPath = resolve(dirname(__filename), '..');
+const appPath = resolve(ocularPath, '..', '..');
 
-const htmlConfig = require(resolve(dirPath, 'html.config'));
+const htmlConfig = require(resolve(appPath, 'html.config.js'));
 
 const BABEL_CONFIG = {
   presets: [
@@ -49,10 +50,10 @@ module.exports = {
 
   resolve: {
     modules: [
-      resolve(dirPath, 'src'),
-      resolve(dirPath, 'node_modules'),
-      resolve(__dirname, '../base'),
-      resolve(__dirname, '../node_modules'),
+      resolve(appPath, 'src'),
+      resolve(appPath, 'node_modules'),
+      resolve(ocularPath, '../base'),
+      resolve(ocularPath, '../node_modules'),
     ],
   },
 

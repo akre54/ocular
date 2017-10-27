@@ -2,7 +2,7 @@
 
 const cp = require('child_process');
 const {writeFileSync} = require('fs');
-const {resolve} = require('path');
+const {dirname, resolve} = require('path');
 const inquirer = require('inquirer');
 const slug = require('slug');
 
@@ -13,16 +13,17 @@ const spawn = isWin ? function(command, args, options) {
   return cp.spawn('cmd.exe', ['/c', command, ...args],  options);
 } : cp.spawn;
 
-const configTemplate = require(resolve('.', 'templates', 'config'));
-const variablesTemplate = require(resolve('.', 'templates', 'variables.scss'));
-const htmlConfigTemplate = require(resolve('.', 'templates', 'html.config'));
+const ocularPath = resolve(dirname(__filename));
+const appPath = resolve(ocularPath, '..', '..');
 
-const DIR_PATH = process.cwd();
+const configTemplate = require(resolve(ocularPath, 'templates', 'config.js'));
+const variablesTemplate = require(resolve(ocularPath, 'templates', 'variables.scss'));
+const htmlConfigTemplate = require(resolve(ocularPath, 'templates', 'html.config.js'));
 
 const DEBUGGING = process.argv.includes('--debug');
 
 const env = Object.assign(process.env, {
-  DIR_PATH,
+  DIR_PATH: ocularPath,
   DEBUGGING,
 });
 
@@ -58,7 +59,7 @@ const commands = {
 
         execSync('mkdir -p static src src/styles');
 
-        const json = require(resolve(DIR_PATH, 'package.json'));
+        const json = require(resolve(ocularPath, 'package.json'));
 
         json.name = slug(res.name);
         json.description = res.desc;
@@ -69,13 +70,13 @@ const commands = {
           lint: 'ocular lint',
         };
 
-        writeFileSync(resolve(DIR_PATH, 'package.json'), `${JSON.stringify(json, null, 2)}\n`);
-        writeFileSync(resolve(DIR_PATH, 'html.config.js'), htmlConfigTemplate(res));
-        writeFileSync(resolve(DIR_PATH, 'src', 'config.js'), configTemplate(res));
-        writeFileSync(resolve(DIR_PATH, 'src', 'mdRoutes.js'), 'export default [];\n');
-        writeFileSync(resolve(DIR_PATH, 'src', 'demos.js'), 'export default {};\n');
-        writeFileSync(resolve(DIR_PATH, 'src', 'styles', 'index.scss'), '');
-        writeFileSync(resolve(DIR_PATH, 'src', 'styles', '_variables.scss'), variablesTemplate());
+        writeFileSync(resolve(ocularPath, 'package.json'), `${JSON.stringify(json, null, 2)}\n`);
+        writeFileSync(resolve(ocularPath, 'html.config.js'), htmlConfigTemplate(res));
+        writeFileSync(resolve(ocularPath, 'src', 'config.js'), configTemplate(res));
+        writeFileSync(resolve(ocularPath, 'src', 'mdRoutes.js'), 'export default [];\n');
+        writeFileSync(resolve(ocularPath, 'src', 'demos.js'), 'export default {};\n');
+        writeFileSync(resolve(ocularPath, 'src', 'styles', 'index.scss'), '');
+        writeFileSync(resolve(ocularPath, 'src', 'styles', '_variables.scss'), variablesTemplate());
 
       });
 
@@ -96,7 +97,7 @@ const commands = {
   lint: () => {
 
     spawn('eslint', [
-      resolve(DIR_PATH, 'src'),
+      resolve(ocularPath, 'src'),
       '-c',
       '.eslintrc',
     ], {cwd: __dirname, stdio: 'inherit'});
@@ -105,7 +106,7 @@ const commands = {
 
   build: () => {
 
-    execSync(`rm -rf ${resolve(DIR_PATH, 'dist')}`);
+    execSync(`rm -rf ${resolve(appPath, 'dist')}`);
 
     spawn('webpack', [
       '--config',

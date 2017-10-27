@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const {resolve} = require('path');
+const {dirname, resolve} = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
@@ -9,13 +9,15 @@ const merge = require('deepmerge');
 const getCustomConfig = require('./custom');
 const config = require('./config');
 
-const dirPath = process.cwd();
+const ocularPath = resolve(dirname(__filename), '..');
+const appPath = resolve(ocularPath, '..', '..');
+
 const mergeOpts = {arrayMerge: (a, b) => a.concat(b)};
 
-const out = merge(merge(config, getCustomConfig(dirPath), mergeOpts), {
+const out = merge(merge(config, getCustomConfig(appPath), mergeOpts), {
 
   output: {
-    path: resolve(dirPath, 'dist'),
+    path: resolve(appPath, 'dist'),
     filename: 'bundle-[hash].js'
   },
 
@@ -30,7 +32,7 @@ const out = merge(merge(config, getCustomConfig(dirPath), mergeOpts), {
           loader: 'sass-loader',
           options: {
             includePaths: [
-              resolve(dirPath, 'src', 'styles'),
+              resolve(appPath, 'src', 'styles'),
             ],
           },
         }, {
@@ -47,7 +49,7 @@ const out = merge(merge(config, getCustomConfig(dirPath), mergeOpts), {
     new CopyWebpackPlugin([{
       from: './static'
     }, {
-      from: resolve(dirPath, 'static'),
+      from: resolve(appPath, 'static'),
     }]),
 
     new webpack.LoaderOptionsPlugin({

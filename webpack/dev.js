@@ -1,14 +1,16 @@
 const webpack = require('webpack');
 const merge = require('deepmerge');
-const {resolve} = require('path');
+const {dirname, resolve} = require('path');
 
 const config = require('./config');
 const getCustomConfig = require('./custom');
 
-const dirPath = process.cwd();
+const ocularPath = resolve(dirname(__filename), '..');
+const appPath = resolve(ocularPath, '..', '..');
+
 const mergeOpts = {arrayMerge: (a, b) => a.concat(b)};
 
-const out = merge(merge(config, getCustomConfig(dirPath), mergeOpts), {
+const out = merge(merge(config, getCustomConfig(appPath), mergeOpts), {
 
   devtool: 'inline-source-maps',
 
@@ -29,7 +31,7 @@ const out = merge(merge(config, getCustomConfig(dirPath), mergeOpts), {
         options: {
           sourceMap: true,
           includePaths: [
-            resolve(dirPath, 'src', 'styles'),
+            resolve(appPath, 'src', 'styles'),
           ],
         },
       }, {
@@ -40,7 +42,7 @@ const out = merge(merge(config, getCustomConfig(dirPath), mergeOpts), {
 
   devServer: {
     hot: true,
-    contentBase: ['./static', resolve(dirPath, 'static')],
+    contentBase: ['./static', resolve(appPath, 'static')],
     historyApiFallback: true,
   },
 
