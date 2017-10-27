@@ -1,7 +1,8 @@
+const {resolve} = require('path');
 module.exports = dirPath => {
 
   try {
-    return require(`${dirPath}/webpack.config.js`);
+    return require(resolve(dirPath, 'webpack.config.js'));
   } catch (e) {
     return {};
   }

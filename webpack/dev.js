@@ -1,10 +1,11 @@
 const webpack = require('webpack');
 const merge = require('deepmerge');
+const {resolve} = require('path');
 
 const config = require('./config');
 const getCustomConfig = require('./custom');
 
-const dirPath = process.env.DIR_PATH;
+const dirPath = process.cwd();
 const mergeOpts = {arrayMerge: (a, b) => a.concat(b)};
 
 const out = merge(merge(config, getCustomConfig(dirPath), mergeOpts), {
@@ -28,7 +29,7 @@ const out = merge(merge(config, getCustomConfig(dirPath), mergeOpts), {
         options: {
           sourceMap: true,
           includePaths: [
-            `${dirPath}/src/styles`,
+            resolve(dirPath, 'src', 'styles'),
           ],
         },
       }, {
@@ -39,7 +40,7 @@ const out = merge(merge(config, getCustomConfig(dirPath), mergeOpts), {
 
   devServer: {
     hot: true,
-    contentBase: ['./static', `${dirPath}/static`],
+    contentBase: ['./static', resolve(dirPath, 'static')],
     historyApiFallback: true,
   },
 
